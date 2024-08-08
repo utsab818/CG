@@ -1,0 +1,30 @@
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+
+image = cv2.imread('image.jpg')
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+ht,wd,c = image.shape
+center = (wd/2, ht/2)
+
+translate = np.float32([[1,0,50],[0,1,50]])
+scale = np.float32([[2,0,0],[0,2,0]])
+rotate = cv2.getRotationMatrix2D(center,30,1)
+
+image_t = cv2.warpAffine(image_rgb, translate, (wd+50, ht+50))
+image_s = cv2.warpAffine(image_rgb, scale, (wd*2, ht*2))
+image_r = cv2.warpAffine(image_rgb, rotate, (wd,ht))
+
+fig, axs = plt.subplots(2,2)
+l_title = ["Original", "Translated", "Scaled", "Rotated"]
+l_var = [image_rgb,image_t,image_s,image_r]
+k = 0
+
+for i in range(2):
+    for j in range(2):
+        axs[i][j].imshow(l_var[k])
+        axs[i][j].set_title(l_title[k])
+        k = k + 1
+
+plt.show()

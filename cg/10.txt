@@ -1,0 +1,36 @@
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+from skimage.metrics import structural_similarity as ssim
+
+image = cv2.imread("image.jpg")
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+kernel_size = 9
+
+blur_kernel = np.ones((kernel_size, kernel_size), dtype=np.float32)/ (kernel_size * kernel_size)
+blurred = cv2.filter2D(image_rgb, -1, blur_kernel)
+
+smooth_kernel = np.array([[2,2,2],[2,10,2],[2,2,2]])
+smooth = cv2.filter2D(image_rgb, -1, smooth_kernel)
+
+gray_blurred = cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY)
+gray_smoothed = cv2.cvtColor(smooth, cv2.COLOR_BGR2GRAY)
+
+ssim_blurred, _ = ssim(image_gray, gray_blurred, full=True)
+ssim_smoothed, _ = ssim(image_gray, gray_smoothed, full=True)
+
+print(f"SSIM between original and blurred image is {ssim_blurred:.4f}")
+print(f"SSIM between original and smoothed image is {ssim_smoothed:.4f}")
+
+fig,axs = plt.subplots(1,3,figsize=(12,10))
+axs[0].imshow(image_rgb)
+axs[0].set_title("Original")
+
+axs[1].imshow(blurred)
+axs[1].set_title("Blurred")
+
+axs[2].imshow(smooth)
+axs[2].set_title("Smoothed")
+
+plt.show()

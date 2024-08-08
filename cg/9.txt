@@ -1,0 +1,31 @@
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+
+image = cv2.imread('image.jpg')
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+sobelx = np.array([[-1,0,1],[-2,0,2],[-1,0,1]])
+sobely = np.array([[-1,-2,-1],[0,0,0],[1,2,1]])
+
+edgesx = cv2.filter2D(gray_image, -1, sobelx)
+edgesy = cv2.filter2D(gray_image, -1, sobely)
+
+edges = cv2.addWeighted(edgesx, 0.5, edgesy, 0.5, 0)
+edges_rgb = cv2.cvtColor(edges, cv2.COLOR_BGR2RGB)
+
+sobel_x = cv2.Sobel(gray_image, cv2.CV_64F, 1, 0 , ksize=5)
+sobel_y = cv2.Sobel(gray_image, cv2.CV_64F, 0, 1, ksize=5)
+
+texture = sobel_x + sobel_y
+
+fig,axs = plt.subplots(1,3)
+l_title = ["Original", "EdgeDetection", "TextureExtraction"]
+l_var = [image_rgb, edges_rgb, texture]
+
+for i in range(3):
+    axs[i].imshow(l_var[i])
+    axs[i].set_title(l_title[i])
+
+plt.show()
